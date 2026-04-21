@@ -1,0 +1,14 @@
+# Java
+*.class
+target/
+*.jar
+*.war
+
+# Node / React
+node_modules/
+dist/
+
+# Editor / OS clutter
+.vscode/
+.DS_Store
+*.log
