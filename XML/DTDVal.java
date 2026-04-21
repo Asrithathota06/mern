@@ -6,6 +6,7 @@ import java.io.File;
 public class DTDVal {
     public static void main(String[] args) {
         try {
+            File xmlFile = new File(args.length > 0 ? args[0] : "bookstore.xml");
             DocumentBuilderFactory f = DocumentBuilderFactory.newInstance();
             f.setValidating(true);
             DocumentBuilder b = f.newDocumentBuilder();
@@ -13,17 +14,19 @@ public class DTDVal {
                 public void warning(SAXParseException e) {
                     System.err.println("Warning: " + e.getMessage());
                 }
-                public void error(SAXParseException e) {
-                    System.err.println("Error: " + e.getMessage());
+                public void error(SAXParseException e) throws SAXException {
+                    throw e;
                 }
-                public void fatalError(SAXParseException e) {
-                    System.err.println("Fatal Error: " + e.getMessage());
+                public void fatalError(SAXParseException e) throws SAXException {
+                    throw e;
                 }
             });
-            b.parse(new File("bookstore.xml"));
-            System.out.println("DTD Validation Completed Successfully ✔");
+            b.parse(xmlFile);
+            System.out.println("DTD validation successful");
+        } catch (SAXParseException e) {
+            System.out.println("DTD validation failed: " + e.getMessage());
         } catch (Exception e) {
-            e.printStackTrace();
+            System.out.println("DTD validation failed: " + e.getMessage());
         }
     }
 }
