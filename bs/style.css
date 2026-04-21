@@ -1,0 +1,15 @@
+body{
+    background:#f4f4f4;
+}
+
+/* Optional extra styling */
+.card{
+    border-radius:10px;
+}
+
+.product-image{
+    height:180px;
+    object-fit:cover;
+    border-radius:8px;
+    margin-bottom:12px;
+}
