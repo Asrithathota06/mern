@@ -14,7 +14,7 @@ app.use(session({
 
 app.get('/', (req, res) => {
 
-    let visits = req.cookies.visits;
+    let { visits } = req.cookies;
 
     if (visits) {
         visits = parseInt(visits) + 1;
@@ -34,7 +34,7 @@ app.get('/', (req, res) => {
         <h2>Session Tracking Demo</h2>
         <p><b>Cookie Visits:</b> ${visits}</p>
         <p><b>Session Visits:</b> ${req.session.views}</p>
-
+        <p><b>Session ID:</b> ${req.sessionID}</p>
         <br>
         <a href="/">Refresh Page</a><br><br>
         <a href="/clear">Clear Cookie</a><br><br>
