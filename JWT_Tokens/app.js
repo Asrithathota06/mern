@@ -1,5 +1,6 @@
 const express = require("express");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 
 const app = express();
 const PORT = 3001;
@@ -14,29 +15,32 @@ let students = [
 
 let nextId = 3;
 
+// hashed password
 const demoUser = {
     username: "admin",
-    password: "admin123"
+    password: bcrypt.hashSync("admin123", 10)
 };
 
+// middleware
 function authenticateToken(req, res, next) {
     const authHeader = req.headers.authorization;
     const token = authHeader && authHeader.split(" ")[1];
-
     if (!token) {
-        return res.status(401).json({ message: "Access token required" });
+        return res.status(401).json({
+            message: "Access token required"
+        });
     }
-
     jwt.verify(token, SECRET_KEY, (err, user) => {
         if (err) {
-            return res.status(403).json({ message: "Invalid or expired token" });
+            return res.status(403).json({
+                message: "Invalid or expired token"
+            });
         }
-
         req.user = user;
         next();
     });
 }
-
+// home route
 app.get("/", (req, res) => {
     res.json({
         message: "Week 11 JWT Student CRUD API",
@@ -51,80 +55,113 @@ app.get("/", (req, res) => {
     });
 });
 
+// login route
 app.post("/login", (req, res) => {
     const { username, password } = req.body;
-
-    if (username !== demoUser.username || password !== demoUser.password) {
-        return res.status(401).json({ message: "Invalid username or password" });
+    // username check
+    if (username !== demoUser.username) {
+        return res.status(401).json({
+            message: "Invalid username"
+        });
     }
-
-    const token = jwt.sign({ username }, SECRET_KEY, { expiresIn: "1h" });
-    res.json({ message: "Login successful", token });
+    // password check using bcrypt
+    const validPassword = bcrypt.compareSync(
+        password,
+        demoUser.password
+    );
+    if (!validPassword) {
+        return res.status(401).json({
+            message: "Invalid password"
+        });
+    }
+    // create jwt token
+    const token = jwt.sign(
+        { username },
+        SECRET_KEY,
+        { expiresIn: "1h" }
+    );
+    res.json({
+        message: "Login successful",
+        token
+    });
 });
-
+// get all students
 app.get("/students", authenticateToken, (req, res) => {
     res.json(students);
 });
 
+// get student by id
 app.get("/students/:id", authenticateToken, (req, res) => {
-    const student = students.find((item) => item.id === Number(req.params.id));
-
+    const student = students.find(
+        (item) => item.id === Number(req.params.id)
+    );
     if (!student) {
-        return res.status(404).json({ message: "Student not found" });
+        return res.status(404).json({
+            message: "Student not found"
+        });
     }
-
     res.json(student);
 });
 
+// add student
 app.post("/students", authenticateToken, (req, res) => {
     const { name, age, course } = req.body;
-
     if (!name || !age || !course) {
-        return res.status(400).json({ message: "name, age and course are required" });
+        return res.status(400).json({
+            message: "name, age and course are required"
+        });
     }
-
     const student = {
         id: nextId++,
         name,
         age: Number(age),
         course
     };
-
     students.push(student);
     res.status(201).json(student);
 });
 
+// update student
 app.put("/students/:id", authenticateToken, (req, res) => {
-    const student = students.find((item) => item.id === Number(req.params.id));
-
+    const student = students.find(
+        (item) => item.id === Number(req.params.id)
+    );
     if (!student) {
-        return res.status(404).json({ message: "Student not found" });
+        return res.status(404).json({
+            message: "Student not found"
+        });
     }
-
     const { name, age, course } = req.body;
-
     if (!name || !age || !course) {
-        return res.status(400).json({ message: "name, age and course are required" });
+        return res.status(400).json({
+            message: "name, age and course are required"
+        });
     }
-
     student.name = name;
     student.age = Number(age);
     student.course = course;
-
     res.json(student);
 });
 
+// delete student
 app.delete("/students/:id", authenticateToken, (req, res) => {
-    const index = students.findIndex((item) => item.id === Number(req.params.id));
-
+    const index = students.findIndex(
+        (item) => item.id === Number(req.params.id)
+    );
     if (index === -1) {
-        return res.status(404).json({ message: "Student not found" });
+        return res.status(404).json({
+            message: "Student not found"
+        });
     }
-
     const deletedStudent = students.splice(index, 1)[0];
-    res.json({ message: "Student deleted successfully", student: deletedStudent });
+    res.json({
+        message: "Student deleted successfully",
+        student: deletedStudent
+    });
 });
 
+// start server
 app.listen(PORT, () => {
     console.log(`Week 11 API running at http://localhost:${PORT}`);
+
 });

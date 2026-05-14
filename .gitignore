@@ -1,14 +1,46 @@
-# Java
+# Java build artifacts
 *.class
 **/target/
 *.jar
 *.war
+*.ear
+*.nar
 
-# Node / React
+# Node / React / Vite / frontend artifacts
 **/node_modules/
 **/dist/
+**/build/
+**/.parcel-cache/
+**/.vite/
+**/.next/
+**/.nuxt/
+**/out/
+**/coverage/
 
-# Editor / OS clutter
-.vscode/
-.DS_Store
+# Environment files
+.env
+.env.*
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
 *.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE / editor folders
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+
+# Misc
+*.tmp
+*.temp
