@@ -1,7 +1,7 @@
 {
   "name": "week11",
   "version": "1.0.0",
-  "description": "",
+  "description": "Express REST API for student CRUD operations with JWT authorization.",
   "main": "app.js",
   "scripts": {
     "start": "node app.js"

@@ -55,3 +55,10 @@ This workspace contains 14 experiments. The goal is to keep the first 7 polished
 2. Add or fix README/run instructions for each first-7 folder.
 3. Fix build/run issues in experiment 5 and 7 first, because they depend on Java tooling.
 4. Then keep experiments 8 to 14 separate so they do not clutter your side of the workspace.
+
+
+ "name": "Asha",
+    "age": 20,
+    "course": "CSE"
+
+    https://docs.google.com/document/d/1vXDtbhhJUZfBxrD5dJ2W3mQFchiJdD3H0sMadcNfn20/edit?tab=t.0
