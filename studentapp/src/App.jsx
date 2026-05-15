@@ -1,31 +1,31 @@
-import { NavLink, Navigate, Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import Navbar from './components/Navbar';
+import Home from './pages/Home';
 import Registration from './pages/Registration';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
 import Contact from './pages/Contact';
 import About from './pages/About';
 
 function App() {
+  // The app uses localStorage to remember if a user is logged in.
+  const isLoggedIn = Boolean(localStorage.getItem('loggedInUser'));
+
   return (
     <div className="app-shell">
-      <header className="topbar">
-        <h1>Student Management System</h1>
-        <nav>
-          <NavLink to="/register">Registration</NavLink>
-          <NavLink to="/login">Login</NavLink>
-          <NavLink to="/contact">Contact</NavLink>
-          <NavLink to="/about">About</NavLink>
-        </nav>
-      </header>
+      <Navbar />
 
       <main className="page-wrap">
         <Routes>
-          <Route path="/" element={<Navigate to="/login" replace />} />
+          <Route
+            path="/"
+            element={<Navigate to={isLoggedIn ? '/home' : '/login'} replace />}
+          />
+          <Route path="/home" element={<Home />} />
           <Route path="/register" element={<Registration />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
     </div>

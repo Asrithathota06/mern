@@ -1,152 +1,123 @@
 const cartCount = document.getElementById("cartCount");
 const { page } = document.body.dataset;
-const savedItems = JSON.parse(localStorage.getItem("shopLiteCart") || "[]");
 
-let items = [...savedItems];
+let items = JSON.parse(localStorage.getItem("cart")) || [];
 
-function formatPrice(amount) {
-    return `₹${amount.toLocaleString("en-IN")}`;
-}
+const saveCart = () =>
+    localStorage.setItem("cart", JSON.stringify(items));
 
-function saveCart() {
-    localStorage.setItem("shopLiteCart", JSON.stringify(items));
+const validEmail = email =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+
+// Protect catalog and cart pages
+if (
+    (page === "catalog" || page === "cart") &&
+    !localStorage.getItem("loggedIn")
+) {
+    window.location.href = "login.html";
 }
 
 function renderCart() {
     const cartItems = document.getElementById("cartItems");
     const cartTotal = document.getElementById("cartTotal");
 
-    if (!cartItems || !cartTotal) {
-        if (cartCount) {
-            cartCount.textContent = String(items.length);
-        }
-        return;
-    }
-
-    cartItems.innerHTML = "";
-
-    if (items.length === 0) {
-        cartItems.innerHTML = '<li class="list-group-item px-0 text-muted">No items added yet.</li>';
-        cartTotal.textContent = "₹0";
-        cartCount.textContent = "0";
-        saveCart();
-        return;
-    }
+    if (!cartItems || !cartTotal) return;
 
     let total = 0;
+    cartItems.innerHTML = "";
 
-    items.forEach((item) => {
+    if (!items.length) {
+        cartItems.innerHTML = "<li>No items added</li>";
+    }
+
+    items.forEach(item => {
         total += item.price;
 
-        const li = document.createElement("li");
-        li.className = "list-group-item px-0 d-flex justify-content-between align-items-center";
-        li.innerHTML = `<span>${item.name}</span><span class="fw-semibold">${formatPrice(item.price)}</span>`;
-        cartItems.appendChild(li);
+        cartItems.innerHTML += `
+        <li class="list-group-item d-flex justify-content-between">
+            <span>${item.name}</span>
+            <span>₹${item.price}</span>
+        </li>`;
     });
 
-    cartTotal.textContent = formatPrice(total);
-    cartCount.textContent = String(items.length);
+    cartTotal.textContent = `₹${total}`;
+    cartCount.textContent = items.length;
+
     saveCart();
 }
 
 function handleRegister() {
-    const form = document.getElementById("registerForm");
-    const message = document.getElementById("registerMessage");
-
-    form?.addEventListener("submit", function (e) {
+    document.getElementById("registerForm")
+    ?.addEventListener("submit", e => {
         e.preventDefault();
 
-        const name = document.getElementById("registerName");
-        const email = document.getElementById("registerEmail");
-        const password = document.getElementById("registerPassword");
+        const name = registerName.value.trim();
+        const email = registerEmail.value;
+        const pass = registerPassword.value;
+        const msg = registerMessage;
 
-        const isNameValid = name.value.trim().length > 0;
-        const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
-        const isPasswordValid = password.value.length >= 6;
-
-        name.classList.toggle("is-invalid", !isNameValid);
-        email.classList.toggle("is-invalid", !isEmailValid);
-        password.classList.toggle("is-invalid", !isPasswordValid);
-
-        if (!isNameValid || !isEmailValid || !isPasswordValid) {
-            message.textContent = "";
-            return;
+        if (name && validEmail(email) && pass.length >= 6) {
+            localStorage.setItem("user", email);
+            msg.textContent = "Registration Successful";
+            e.target.reset();
+        } else {
+            msg.textContent = "Invalid Details";
         }
-
-        message.textContent = `Welcome, ${name.value.trim()}! Registration details look good.`;
-        form.reset();
-        name.classList.remove("is-invalid");
-        email.classList.remove("is-invalid");
-        password.classList.remove("is-invalid");
     });
 }
 
 function handleLogin() {
-    const form = document.getElementById("loginForm");
-    const message = document.getElementById("loginMessage");
-
-    form?.addEventListener("submit", function (e) {
+    document.getElementById("loginForm")
+    ?.addEventListener("submit", e => {
         e.preventDefault();
 
-        const email = document.getElementById("loginEmail");
-        const password = document.getElementById("loginPassword");
-
-        const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim());
-        const isPasswordValid = password.value.length >= 6;
-
-        email.classList.toggle("is-invalid", !isEmailValid);
-        password.classList.toggle("is-invalid", !isPasswordValid);
-
-        if (!isEmailValid || !isPasswordValid) {
-            message.textContent = "";
-            return;
+        if (
+            validEmail(loginEmail.value) &&
+            loginPassword.value.length >= 6
+        ) {
+            localStorage.setItem("loggedIn", true);
+            loginMessage.textContent = "Login Successful";
+            window.location.href = "catalog.html";
+        } else {
+            loginMessage.textContent = "Invalid Details";
         }
-
-        message.textContent = "Login details look good.";
-        form.reset();
-        email.classList.remove("is-invalid");
-        password.classList.remove("is-invalid");
     });
 }
 
 function handleCatalog() {
-    document.querySelectorAll(".add-to-cart").forEach((button) => {
-        button.addEventListener("click", () => {
-            const { name, price } = button.dataset;
-            items.push({ name, price: Number(price) });
-            if (cartCount) {
-                cartCount.textContent = String(items.length);
-            }
+    document.querySelectorAll(".add-to-cart")
+    .forEach(btn => {
+        btn.onclick = () => {
+            items.push({
+                name: btn.dataset.name,
+                price: +btn.dataset.price
+            });
+
+            cartCount.textContent = items.length;
             saveCart();
-        });
+        };
     });
 }
 
 function handleCart() {
-    const clearCart = document.getElementById("clearCart");
-
     clearCart?.addEventListener("click", () => {
         items = [];
-        saveCart();
         renderCart();
     });
 }
 
-if (cartCount) {
-    cartCount.textContent = String(items.length);
-}
+// Logout functionality
+const logoutBtn = document.getElementById("logoutBtn");
+logoutBtn?.addEventListener("click", () => {
+    localStorage.removeItem("loggedIn");
+    window.location.href = "login.html";
+});
 
-if (page === "register") {
-    handleRegister();
-}
+cartCount.textContent = items.length;
 
-if (page === "login") {
-    handleLogin();
-}
-
-if (page === "catalog") {
-    handleCatalog();
-}
+if (page === "register") handleRegister();
+if (page === "login") handleLogin();
+if (page === "catalog") handleCatalog();
 
 if (page === "cart") {
     handleCart();
