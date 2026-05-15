@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Registration() {
-  const navigate = useNavigate();
+  // useState keeps the form data in local component state.
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +11,7 @@ function Registration() {
     password: '',
   });
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { id, value } = event.target;
@@ -28,6 +29,7 @@ function Registration() {
     }
 
     const userData = { name, email, roll, department, password };
+    // localStorage stores structured data as a string.
     localStorage.setItem('registeredUser', JSON.stringify(userData));
     navigate('/login');
   };
@@ -35,17 +37,17 @@ function Registration() {
   return (
     <section className="card">
       <h2>Student Registration</h2>
-      <p>Fill in your details to create a student account.</p>
+      <p>Use this form to register your student account.</p>
 
       <form className="form-grid" onSubmit={handleSubmit}>
         <div>
-          <label htmlFor="name">Full Name</label>
+          <label htmlFor="name">Name</label>
           <input
             id="name"
             type="text"
-            placeholder="Enter full name"
             value={formData.name}
             onChange={handleChange}
+            placeholder="Enter your full name"
           />
         </div>
 
@@ -54,9 +56,9 @@ function Registration() {
           <input
             id="email"
             type="email"
-            placeholder="Enter email"
             value={formData.email}
             onChange={handleChange}
+            placeholder="Enter your email"
           />
         </div>
 
@@ -65,9 +67,9 @@ function Registration() {
           <input
             id="roll"
             type="text"
-            placeholder="Enter roll number"
             value={formData.roll}
             onChange={handleChange}
+            placeholder="Enter your roll number"
           />
         </div>
 
@@ -76,9 +78,9 @@ function Registration() {
           <input
             id="department"
             type="text"
-            placeholder="Enter department"
             value={formData.department}
             onChange={handleChange}
+            placeholder="Enter your department"
           />
         </div>
 
@@ -87,15 +89,15 @@ function Registration() {
           <input
             id="password"
             type="password"
-            placeholder="Create password"
             value={formData.password}
             onChange={handleChange}
+            placeholder="Create a password"
           />
         </div>
 
         {error && <p className="form-error">{error}</p>}
 
-        <div className="full">
+        <div className="full button-row">
           <button type="submit">Register</button>
         </div>
       </form>

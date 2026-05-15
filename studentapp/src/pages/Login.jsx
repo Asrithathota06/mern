@@ -2,10 +2,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function Login() {
-  const navigate = useNavigate();
+  // useState keeps the local form values while the user types.
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -17,13 +18,15 @@ function Login() {
 
     const storedUser = localStorage.getItem('registeredUser');
     if (!storedUser) {
-      setError('No registered user found. Please register first.');
+      setError('No registration found. Please register first.');
       return;
     }
 
     const userData = JSON.parse(storedUser);
     if (userData.email === email && userData.password === password) {
-      navigate('/dashboard');
+      // Save a simple login flag in localStorage.
+      localStorage.setItem('loggedInUser', userData.email);
+      navigate('/home');
       return;
     }
 
@@ -33,40 +36,40 @@ function Login() {
   return (
     <section className="card">
       <h2>Student Login</h2>
-      <p>Login to access your student dashboard.</p>
+      <p>Enter your registered email and password.</p>
 
       <form className="form-grid" onSubmit={handleSubmit}>
-        <div className="full">
+        <div>
           <label htmlFor="loginEmail">Email</label>
           <input
             id="loginEmail"
             type="email"
-            placeholder="Enter email"
             value={email}
             onChange={(event) => {
               setEmail(event.target.value);
               setError('');
             }}
+            placeholder="Enter your email"
           />
         </div>
 
-        <div className="full">
+        <div>
           <label htmlFor="loginPassword">Password</label>
           <input
             id="loginPassword"
             type="password"
-            placeholder="Enter password"
             value={password}
             onChange={(event) => {
               setPassword(event.target.value);
               setError('');
             }}
+            placeholder="Enter your password"
           />
         </div>
 
         {error && <p className="form-error">{error}</p>}
 
-        <div className="full">
+        <div className="full button-row">
           <button type="submit">Login</button>
         </div>
       </form>

@@ -1,14 +1,14 @@
 function About() {
   return (
     <section className="card">
-      <h2>About Student Management System</h2>
+      <h2>About This App</h2>
       <p>
-        This React application demonstrates a basic Student Management System with
-        separate pages for registration, login, contact, and about information.
+        This small React app shows how a student can register, login, and view a
+        simple home page using only browser storage.
       </p>
       <p>
-        Routing is implemented using React Router so users can navigate smoothly
-        between pages without reloading the browser.
+        Routing works with React Router so each page appears instantly without a
+        page refresh. This keeps the app easy to explain in a lab viva.
       </p>
     </section>
   );
